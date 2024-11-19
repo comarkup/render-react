@@ -1,0 +1,9 @@
+{
+  "name": "minimal-react-editor",
+  "version": "1.0.0",
+  "dependencies": {
+    "express": "^4.17.1",
+    "react": "^16.14.0",
+    "react-dom": "^16.14.0"
+  }
+}
