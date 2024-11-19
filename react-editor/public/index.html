@@ -1,0 +1,129 @@
+<!-- public/index.html -->
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>React Live Editor</title>
+    <script src="https://unpkg.com/react@16.14.0/umd/react.development.js"></script>
+    <script src="https://unpkg.com/react-dom@16.14.0/umd/react-dom.development.js"></script>
+    <script src="https://unpkg.com/babel-standalone@6.26.0/babel.min.js"></script>
+    <style>
+        body {
+            margin: 0;
+            padding: 20px;
+            font-family: Arial, sans-serif;
+        }
+        .editor-container {
+            display: grid;
+            grid-template-columns: 1fr 1fr;
+            gap: 20px;
+            max-width: 1200px;
+            margin: 0 auto;
+        }
+        .editor-panel, .preview-panel {
+            background: white;
+            border-radius: 8px;
+            box-shadow: 0 2px 4px rgba(0,0,0,0.1);
+            padding: 20px;
+        }
+        textarea {
+            width: 100%;
+            height: 400px;
+            font-family: monospace;
+            padding: 10px;
+            border: 1px solid #ddd;
+            border-radius: 4px;
+            resize: vertical;
+        }
+        .error {
+            background: #ffebee;
+            color: #c62828;
+            padding: 10px;
+            border-radius: 4px;
+            margin-bottom: 10px;
+        }
+        .preview-content {
+            border: 1px solid #ddd;
+            border-radius: 4px;
+            padding: 20px;
+            min-height: 200px;
+        }
+    </style>
+</head>
+<body>
+<div id="root"></div>
+<script type="text/babel">
+    function SimpleEditor() {
+        const [code, setCode] = React.useState(`function ExampleComponent() {
+  return React.createElement('div', {
+    style: {
+      padding: '20px',
+      backgroundColor: '#f0f0f0'
+    }
+  },
+    React.createElement('h1', {
+      style: { color: 'blue' }
+    }, 'Hello from React'),
+    React.createElement('p', null, 'This is a simple component')
+  );
+}`);
+        const [preview, setPreview] = React.useState('');
+        const [error, setError] = React.useState(null);
+
+        React.useEffect(() => {
+            const timer = setTimeout(async () => {
+                try {
+                    const response = await fetch('/render', {
+                        method: 'POST',
+                        headers: { 'Content-Type': 'application/json' },
+                        body: JSON.stringify({ code })
+                    });
+
+                    const data = await response.json();
+
+                    if (data.error) {
+                        setError(data.error);
+                        setPreview('');
+                    } else {
+                        setError(null);
+                        setPreview(data.html);
+                    }
+                } catch (err) {
+                    setError('Connection error');
+                }
+            }, 1000);
+
+            return () => clearTimeout(timer);
+        }, [code]);
+
+        return (
+            <div className="editor-container">
+                <div className="editor-panel">
+                    <h2>Editor</h2>
+                    <textarea
+                        value={code}
+                        onChange={e => setCode(e.target.value)}
+                        spellCheck="false"
+                    />
+                </div>
+
+                <div className="preview-panel">
+                    <h2>Preview</h2>
+                    {error && (
+                        <div className="error">
+                            {error}
+                        </div>
+                    )}
+                    <div className="preview-content">
+                        <div dangerouslySetInnerHTML={{ __html: preview }} />
+                    </div>
+                </div>
+            </div>
+        );
+    }
+
+    ReactDOM.render(<SimpleEditor />, document.getElementById('root'));
+</script>
+</body>
+</html>

@@ -1,4 +1,44 @@
 
+Struktura projektu
+
+```
+react-editor/
+├── node_modules/
+├── public/
+│   └── index.html
+├── package.json
+├── package-lock.json
+├── server.js
+├── .gitignore
+└── setup.sh
+```
+
+
+2. Nadaj uprawnienia do wykonania:
+
+```bash
+chmod +x setup.sh
+```
+
+3. Uruchom skrypt:
+```bash
+./setup.sh
+```
+
+4. Po zakończeniu instalacji uruchom serwer:
+```bash
+npm start
+```
+
+Aby przetestować API możesz użyć curl:
+```bash
+curl -X POST \
+  http://localhost:3001/render \
+  -H "Content-Type: application/json" \
+  -d '{"code": "function ExampleComponent() { return React.createElement('\''div'\'', null, '\''Hello'\'') }"}'
+```
+
+
 
 1. Najpierw zainstaluj wymagane zależności dla serwera:
 ```bash

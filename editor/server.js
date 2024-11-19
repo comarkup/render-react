@@ -1,16 +1,20 @@
-const express = require('express');
+// server.js
+import express from 'express';
+import { createRequire } from 'module';
+import { fileURLToPath } from 'url';
+import { dirname } from 'path';
+import path from 'path';
+
+const require = createRequire(import.meta.url);
 const React = require('react');
 const ReactDOMServer = require('react-dom/server');
-const path = require('path');
+
+const __filename = fileURLToPath(import.meta.url);
+const __dirname = dirname(__filename);
+
 const app = express();
 
-// Basic CORS middleware
-app.use((req, res, next) => {
-    res.header('Access-Control-Allow-Origin', '*');
-    res.header('Access-Control-Allow-Headers', 'Content-Type');
-    next();
-});
-
+// Middleware
 app.use(express.json());
 app.use(express.static('public'));
 
@@ -48,5 +52,5 @@ app.post('/render', (req, res) => {
 
 const PORT = 3001;
 app.listen(PORT, () => {
-    console.log(`Server running on http://localhost:${PORT}`);
+    console.log(`Server running at http://localhost:${PORT}`);
 });
